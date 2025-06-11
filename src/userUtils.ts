@@ -1,5 +1,6 @@
 import type { User, Bill } from './types'
 import { STORAGE_KEYS } from './types'
+import { supabase } from './supabaseClient'
 
 export const generateUserCode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -27,36 +28,27 @@ export const logout = (): void => {
   localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
 };
 
-export const registerUser = (name: string, email: string): User => {
-  const users = getAllUsers();
-  const existingUser = users.find(u => u.email === email);
-  if (existingUser) {
-    throw new Error('すでに登録されているメールアドレスです');
-  }
-  let userCode = generateUserCode();
-  while (users.some(u => u.userCode === userCode)) {
-    userCode = generateUserCode();
-  }
-  const newUser: User = {
-    id: Date.now().toString(),
-    name,
-    email,
-    userCode,
-  };
-  users.push(newUser);
-  saveAllUsers(users);
-  saveCurrentUser(newUser);
-  return newUser;
+// Supabase에 사용자 등록
+export const registerUserOnline = async (name: string, email: string) => {
+  const userCode = generateUserCode();
+  const { data, error } = await supabase
+    .from('users')
+    .insert([{ name, email, user_code: userCode }])
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
 };
 
-export const loginUser = (email: string): User => {
-  const users = getAllUsers();
-  const user = users.find(u => u.email === email);
-  if (!user) {
-    throw new Error('登録されていないメールアドレスです');
-  }
-  saveCurrentUser(user);
-  return user;
+// Supabase에서 사용자 조회(로그인)
+export const loginUserOnline = async (email: string) => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .single();
+  if (error || !data) throw new Error('登録されていないメールアドレスです');
+  return data;
 };
 
 export const updateUser = (updatedUser: User): void => {
@@ -114,6 +106,30 @@ export const updateBill = (billId: string, updates: Partial<Bill>): void => {
     bills[index] = { ...bills[index], ...updates };
     saveBills(bills);
   }
+};
+
+// Supabase에 청구 데이터 추가
+export const addBillOnline = async (bill: Omit<Bill, 'id'>) => {
+  const { data, error } = await supabase
+    .from('bills')
+    .insert([{ ...bill }])
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+// Supabase에서 사용자별 청구 내역 조회
+export const getBillsByUserOnline = async (userId: string, type: 'from' | 'to') => {
+  let query = supabase.from('bills').select('*');
+  if (type === 'from') {
+    query = query.eq('fromUserId', userId);
+  } else {
+    query = query.eq('toUserId', userId);
+  }
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return data;
 };
 
 export const getBillsByUser = (userId: string, type: 'from' | 'to'): Bill[] => {
