@@ -130,9 +130,19 @@ export const updateBill = (billId: string, updates: Partial<Bill>): void => {
 
 // Supabase에 청구 데이터 추가
 export const addBillOnline = async (bill: Omit<Bill, 'id'>) => {
+  // Supabase 컬럼명에 맞게 key를 변환
+  const dbBill = {
+    fromuserid: bill.fromUserId,
+    touserid: bill.toUserId,
+    food: bill.food,
+    price: bill.price,
+    status: bill.status,
+    date: bill.date,
+    targetcode: bill.targetCode
+  }
   const { data, error } = await supabase
     .from('bills')
-    .insert([{ ...bill }])
+    .insert([dbBill])
     .select()
     .single();
   if (error) throw new Error(error.message);
