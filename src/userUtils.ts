@@ -90,6 +90,15 @@ export const setTargetCode = (userId: string, targetUserCode: string): boolean =
   return true;
 };
 
+// Supabase에서 내 target_code 컬럼을 업데이트
+export const setTargetCodeOnline = async (userId: string, targetCode: string) => {
+  const { error } = await supabase
+    .from('users')
+    .update({ target_code: targetCode })
+    .eq('id', userId);
+  return !error;
+};
+
 export const getBills = (): Bill[] => {
   const bills = localStorage.getItem(STORAGE_KEYS.BILLS);
   return bills ? JSON.parse(bills) : [];
