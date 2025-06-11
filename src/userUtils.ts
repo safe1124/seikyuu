@@ -69,6 +69,17 @@ export const findUserByCode = (userCode: string): User | null => {
   return users.find(u => u.userCode === userCode) || null;
 };
 
+// Supabase에서 user_code로 사용자 찾기
+export const findUserByCodeOnline = async (userCode: string) => {
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('user_code', userCode)
+    .single();
+  if (error || !data) return null;
+  return data;
+};
+
 export const setTargetCode = (userId: string, targetUserCode: string): boolean => {
   const currentUser = getAllUsers().find(u => u.id === userId);
   const targetUser = findUserByCode(targetUserCode);
