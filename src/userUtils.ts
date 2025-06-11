@@ -6,15 +6,6 @@ export const generateUserCode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-export const getAllUsers = (): User[] => {
-  const users = localStorage.getItem(STORAGE_KEYS.ALL_USERS);
-  return users ? JSON.parse(users) : [];
-};
-
-export const saveAllUsers = (users: User[]): void => {
-  localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(users));
-};
-
 export const getCurrentUser = (): User | null => {
   const user = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
   return user ? JSON.parse(user) : null;
@@ -51,24 +42,6 @@ export const loginUserOnline = async (email: string) => {
   return data;
 };
 
-export const updateUser = (updatedUser: User): void => {
-  const users = getAllUsers();
-  const index = users.findIndex(u => u.id === updatedUser.id);
-  if (index !== -1) {
-    users[index] = { ...users[index], ...updatedUser };
-    saveAllUsers(users);
-    const currentUser = getCurrentUser();
-    if (currentUser && currentUser.id === updatedUser.id) {
-      saveCurrentUser(users[index]);
-    }
-  }
-};
-
-export const findUserByCode = (userCode: string): User | null => {
-  const users = getAllUsers();
-  return users.find(u => u.userCode === userCode) || null;
-};
-
 // Supabase에서 user_code로 사용자 찾기
 export const findUserByCodeOnline = async (userCode: string) => {
   const { data, error } = await supabase
@@ -78,16 +51,6 @@ export const findUserByCodeOnline = async (userCode: string) => {
     .single();
   if (error || !data) return null;
   return data;
-};
-
-export const setTargetCode = (userId: string, targetUserCode: string): boolean => {
-  const currentUser = getAllUsers().find(u => u.id === userId);
-  const targetUser = findUserByCode(targetUserCode);
-  if (!currentUser || !targetUser || currentUser.id === targetUser.id) {
-    return false;
-  }
-  updateUser({ ...currentUser, targetCode: targetUserCode });
-  return true;
 };
 
 // Supabase에서 내 target_code 컬럼을 업데이트
@@ -185,3 +148,68 @@ export const updateBillOnline = async (billId: string, updates: Partial<Bill>) =
     .eq('id', billId)
   return !error
 }
+
+// New function to update user details in Supabase
+export const updateUserOnline = async (userId: string, updates: Partial<Pick<User, 'role' | 'name' | 'targetCode'>>) => {
+  const dbUpdates: any = {};
+  if (updates.role !== undefined) {
+    dbUpdates.role = updates.role;
+  }
+  if (updates.name !== undefined) {
+    dbUpdates.name = updates.name;
+  }
+  if (updates.targetCode !== undefined) {
+    dbUpdates.target_code = updates.targetCode;
+  }
+
+  if (Object.keys(dbUpdates).length === 0) {
+    console.warn("updateUserOnline called with no fields to update for user:", userId);
+    const { data: existingUserData, error: fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (fetchError) throw new Error(fetchError.message);
+    if (!existingUserData) throw new Error('User not found when trying to fetch for no-op update.');
+
+    return {
+      data: {
+        id: existingUserData.id,
+        name: existingUserData.name,
+        email: existingUserData.email,
+        userCode: existingUserData.user_code,
+        targetCode: existingUserData.target_code,
+        role: existingUserData.role,
+      } as User,
+      error: null
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('users')
+    .update(dbUpdates)
+    .eq('id', userId)
+    .select('*') 
+    .single();
+
+  if (error) {
+    console.error('Error updating user online:', error.message);
+    throw new Error(`Failed to update user: ${error.message}`);
+  }
+  
+  if (data) {
+    return {
+      data: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        userCode: data.user_code,
+        targetCode: data.target_code,
+        role: data.role,
+      } as User,
+      error: null
+    };
+  }
+  throw new Error('User update seemed to succeed but no data was returned.'); 
+};
