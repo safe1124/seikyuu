@@ -153,9 +153,9 @@ export const addBillOnline = async (bill: Omit<Bill, 'id'>) => {
 export const getBillsByUserOnline = async (userId: string, type: 'from' | 'to') => {
   let query = supabase.from('bills').select('*');
   if (type === 'from') {
-    query = query.eq('fromUserId', userId);
+    query = query.eq('fromuserid', userId);
   } else {
-    query = query.eq('toUserId', userId);
+    query = query.eq('touserid', userId);
   }
   const { data, error } = await query;
   if (error) throw new Error(error.message);
