@@ -57,12 +57,12 @@ export default function ParentPage() {
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontWeight: 600 }}>{bill.price.toLocaleString()}円</div>
                 <div style={{ fontSize: 13, color: bill.status === 'pending' ? '#f39c12' : bill.status === 'approved' ? '#27ae60' : '#e74c3c' }}>
-                  {bill.status === 'pending' ? '保留中' : bill.status === 'approved' ? '承認済み' : '却下'}
+                  {bill.status === 'pending' ? '保留中' : bill.status === 'approved' ? '承認済み' : '承認'}
                 </div>
                 {bill.status === 'pending' && (
                   <div style={{ marginTop: 6, display: 'flex', gap: 6 }}>
                     <button onClick={() => handleStatus(bill.id, 'approved')} style={{ background: '#27ae60', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 13 }}>承認</button>
-                    <button onClick={() => handleStatus(bill.id, 'rejected')} style={{ background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 13 }}>却下</button>
+                    <button onClick={() => handleStatus(bill.id, 'rejected')} style={{ background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 10px', fontSize: 13 }}>承認</button>
                   </div>
                 )}
               </div>
