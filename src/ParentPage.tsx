@@ -38,7 +38,9 @@ export default function ParentPage({ user }: ParentPageProps) {
     setBills(userBills || [])
   }
 
-  const filtered = bills.filter(bill => getMonth(bill.date) === selectedMonth)
+  const filtered = bills
+    .filter(bill => getMonth(bill.date) === selectedMonth)
+    .sort((a, b) => Number(b.id) - Number(a.id)); // Sort by ID descending
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
