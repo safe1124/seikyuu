@@ -111,20 +111,20 @@ export default function ParentPage({ user }: ParentPageProps) {
                   <div style={{ marginTop: 6, display: 'flex', gap: 6 }}>
                     <button 
                       onClick={() => handleStatus(bill.id, 'approved')} 
-                      style={{ 
-                        background: '#27ae60', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: 6, 
-                        padding: '4px 10px', 
-                        fontSize: 13,
-                        cursor: 'pointer'
+                      style={{
+                        padding: '6px 12px',
+                        fontSize: '0.9rem',
+                        borderRadius: '10px',
+                        background: 'rgba(39, 174, 96, 0.7)', // Greenish, semi-transparent
+                        color: '#fff',
+                        border: '1px solid rgba(255, 255, 255, 0.18)',
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        cursor: 'pointer',
+                        transition: 'background 0.3s ease'
                       }}
-                    >
-                      承認
-                    </button>
-                    <button 
-                      onClick={() => handleStatus(bill.id, 'rejected')} 
+                      onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = 'rgba(39, 174, 96, 0.9)'}
                       style={{ 
                         background: '#e74c3c', 
                         color: '#fff', 
