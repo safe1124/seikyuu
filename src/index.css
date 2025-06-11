@@ -4,8 +4,8 @@
   font-weight: 400;
 
   color-scheme: light;
-  color: #213547;
-  background-color: #f8fafc;
+  color: #333; /* Darker text for better contrast on light neumorphic background */
+  /* background-color: #D1D8EC; */ /* Moved to body */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,55 +19,90 @@ a {
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #535bf2; /* Keep link color distinct */
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex; */ /* Handled by #root flex for centering content */
+  /* place-items: center; */ /* Handled by #root flex for centering content */
   min-width: 320px;
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: #D1D8EC; /* Neumorphic base background */
+  /* Removed height, width, specific flex props - let #root handle layout */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #333;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+h1, h2, h3, h4, h5, h6 {
+  color: #4A5568; /* Slightly softer color for headings */
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  -webkit-border-radius: 12px; /* Consistent rounding */
+  border-radius: 12px;
+  border: none; /* Neumorphism typically avoids harsh borders */
+  padding: 0.8em 1.5em; /* Adjusted padding */
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 600; /* Slightly bolder for buttons */
   font-family: inherit;
-  background-color: #f1f5f9;
-  color: #334155;
+  background: #D1D8EC;
+  color: #4A5568; /* Text color for buttons */
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.2s ease-in-out; /* Smooth transitions for shadow and transform */
+  -webkit-box-shadow: 5px 5px 10px #9ba0af, -5px -5px 10px #ffffff;
+  box-shadow: 5px 5px 10px #9ba0af, -5px -5px 10px #ffffff;
 }
 button:hover {
-  border-color: #64748b;
-  background-color: #e2e8f0;
+  /* Optional: slightly change color or shadow on hover, but neumorphism often relies on pressed state */
+  /* background: #c7cddf; */
+}
+button:active {
+  -webkit-box-shadow: inset 5px 5px 10px #9ba0af, inset -5px -5px 10px #ffffff;
+  box-shadow: inset 5px 5px 10px #9ba0af, inset -5px -5px 10px #ffffff;
+  /* transform: translateY(1px); */ /* Optional: slight press down effect */
+  color: #3367D6; /* Change text color when pressed for feedback */
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px auto #4285F4; /* Clearer focus outline */
+  outline-offset: 2px;
 }
+
+/* Input styles for Neumorphism */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select {
+  border-radius: 12px;
+  border: none;
+  padding: 0.8em 1em;
+  font-size: 1em;
+  background: #D1D8EC;
+  color: #4A5568;
+  -webkit-box-shadow: inset 3px 3px 7px #9ba0af, inset -3px -3px 7px #ffffff;
+  box-shadow: inset 3px 3px 7px #9ba0af, inset -3px -3px 7px #ffffff;
+  transition: box-shadow 0.2s ease-in-out;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+select:focus {
+  outline: none;
+  -webkit-box-shadow: inset 1px 1px 3px #9ba0af, inset -1px -1px 3px #ffffff, 0 0 0 2px #4285F4; /* Focus ring + adjusted inset */
+  box-shadow: inset 1px 1px 3px #9ba0af, inset -1px -1px 3px #ffffff, 0 0 0 2px #4285F4;
+}
+
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #333;
+    /* background-color: #D1D8EC; */ /* Set on body */
   }
   a:hover {
-    color: #747bff;
+    color: #535bf2;
   }
-  button {
-    background-color: #f9f9f9;
-  }
+  /* Button styling is now primarily outside this media query for neumorphism */
 }
 
 /* 모바일(아이폰) 특화 레이아웃을 위한 스타일 */
@@ -96,21 +131,93 @@ body {
   min-height: 100vh;
   max-width: 430px; /* 아이폰 14 Pro Max 기준 */
   margin: 0 auto;
-  background: #fff;
-  box-shadow: 0 0 16px 0 rgba(0,0,0,0.04);
+  background: #D1D8EC; /* Match body or slightly different for a container effect */
+  /* Neumorphic container effect for #root if desired, or keep it flat */
+  /* 
+  border-radius: 20px;
+  -webkit-box-shadow: 10px 10px 20px #9ba0af, -10px -10px 20px #ffffff;
+  box-shadow: 10px 10px 20px #9ba0af, -10px -10px 20px #ffffff; 
+  */
+  padding: 1rem; /* Add some padding inside the root container */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  /* align-items: center; */ /* Let content align naturally or control per page */
+  /* justify-content: flex-start; */
 }
 
-@media (max-width: 430px) {
-  #root {
-    max-width: 100vw;
-  }
+/* General card/section style for neumorphism */
+.neumorphic-card {
+  background: #D1D8EC;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  -webkit-box-shadow: 8px 8px 16px #9ba0af, -8px -8px 16px #ffffff;
+  box-shadow: 8px 8px 16px #9ba0af, -8px -8px 16px #ffffff;
 }
 
-@media (orientation: landscape) {
-  #root {
-    min-height: 100vw;
-    max-width: 100vh;
-  }
+.neumorphic-inset-card {
+  background: #D1D8EC;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  -webkit-box-shadow: inset 5px 5px 10px #9ba0af, inset -5px -5px 10px #ffffff;
+  box-shadow: inset 5px 5px 10px #9ba0af, inset -5px -5px 10px #ffffff;
+}
+
+/* Style for list items (bills) */
+ul[style*="list-style: none"] li[style*="background: #f1f3f5"] {
+  background: #D1D8EC !important; /* Important to override inline style */
+  border-radius: 12px !important;
+  -webkit-box-shadow: 5px 5px 10px #9ba0af, -5px -5px 10px #ffffff !important;
+  box-shadow: 5px 5px 10px #9ba0af, -5px -5px 10px #ffffff !important;
+  padding: 12px 16px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Specific overrides for buttons that might have different background colors due to state (e.g., disabled) */
+button[disabled] {
+  background: #D1D8EC; /* Keep background consistent */
+  color: #9ba0af; /* Greyed out text for disabled state */
+  -webkit-box-shadow: inset 2px 2px 5px #9ba0af, inset -2px -2px 5px #ffffff; /* "Pressed in" look for disabled */
+  box-shadow: inset 2px 2px 5px #9ba0af, inset -2px -2px 5px #ffffff;
+}
+
+/* Override for specific colored buttons if they should retain color but adopt neumorphic shadow */
+/* Example: A primary action button that was blue */
+button.primary-action {
+  background: #4285F4; /* Keep its distinct color */
+  color: white;
+  /* Still apply neumorphic shadow */
+  -webkit-box-shadow: 5px 5px 10px #9ba0af, -5px -5px 10px #ffffff;
+  box-shadow: 5px 5px 10px #9ba0af, -5px -5px 10px #ffffff;
+}
+
+button.primary-action:active {
+  background: #3367D6;
+  -webkit-box-shadow: inset 5px 5px 10px #2a5091, inset -5px -5px 10px #5a9bff; /* Adjusted inset shadow for colored bg */
+  box-shadow: inset 5px 5px 10px #2a5091, inset -5px -5px 10px #5a9bff;
+}
+
+/* Styles for the bill status divs to make them look like tags/badges */
+div[style*="font-size: 13px"][style*="color: rgb(243, 156, 18)"], 
+div[style*="font-size: 13px"][style*="color: rgb(39, 174, 96)"], 
+div[style*="font-size: 13px"][style*="color: rgb(231, 76, 60)"] {
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    -webkit-box-shadow: 3px 3px 6px #9ba0af, -3px -3px 6px #ffffff !important;
+    box-shadow: 3px 3px 6px #9ba0af, -3px -3px 6px #ffffff !important;
+    background: #D1D8EC !important; /* Base background */
+}
+
+/* Specific text colors for status, overriding the general color for these tags */
+div[style*="color: rgb(243, 156, 18)"] { /* pending */
+    color: #c8800c !important;
+}
+div[style*="color: rgb(39, 174, 96)"] { /* approved */
+    color: #1e8a4c !important;
+}
+div[style*="color: rgb(231, 76, 60)"] { /* rejected */
+    color: #b93d30 !important;
 }
