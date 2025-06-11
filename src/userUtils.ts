@@ -157,6 +157,9 @@ export const getBillsByUserOnline = async (userId: string, type: 'from' | 'to'):
   } else {
     query = query.eq('touserid', userId);
   }
+  // id를 기준으로 내림차순 정렬하여 최신 청구가 먼저 오도록 합니다.
+  query = query.order('id', { ascending: false });
+
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   if (!data) return [];

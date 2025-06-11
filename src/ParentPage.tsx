@@ -51,22 +51,38 @@ export default function ParentPage({ user }: ParentPageProps) {
     return sender ? sender.name : `ユーザー ${fromUserId.slice(-4)}`
   }
 
+  // Calculate total for the selected month
+  const calculateSelectedMonthTotal = () => {
+    return filtered
+      .reduce((total, bill) => total + bill.price, 0);
+  };
+
+  const selectedMonthTotal = calculateSelectedMonthTotal();
+
   return (
     <main style={{ padding: '1.5rem 0.5rem', maxWidth: 430, margin: '0 auto', width: '100%' }}>
       <h2 style={{ textAlign: 'center', fontSize: '1.5rem', marginBottom: 16 }}>被請求人ページ</h2>
       
-      <div style={{ marginBottom: 18 }}>
-        <label style={{ fontWeight: 600, marginRight: 8 }}>月選択:</label>
-        <select 
-          value={selectedMonth} 
-          onChange={e => setSelectedMonth(e.target.value)} 
-          style={{ fontSize: '1.05rem', padding: 6, borderRadius: 6, border: '1px solid #ccc' }}
-        >
-          {months.length === 0 && <option>履歴なし</option>}
-          {months.map(month => (
-            <option key={month} value={month}>{month}</option>
-          ))}
-        </select>
+      <div style={{ marginBottom: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <label style={{ fontWeight: 600, marginRight: 8 }}>月選択:</label>
+          <select 
+            value={selectedMonth} 
+            onChange={e => setSelectedMonth(e.target.value)} 
+            style={{ fontSize: '1.05rem', padding: 6, borderRadius: 6, border: '1px solid #ccc' }}
+          >
+            {months.length === 0 && <option>履歴なし</option>}
+            {months.map(month => (
+              <option key={month} value={month}>{month}</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ padding: '10px', background: '#e9ecef', borderRadius: 8, textAlign: 'center' }}>
+          <h3 style={{ margin: 0, fontSize: '0.9rem', color: '#495057' }}>選択月の総額</h3>
+          <p style={{ margin: '4px 0 0', fontSize: '1.2rem', fontWeight: 'bold', color: '#212529' }}>
+            {selectedMonthTotal.toLocaleString()}円
+          </p>
+        </div>
       </div>
 
       <section>
