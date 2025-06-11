@@ -150,8 +150,8 @@ export const addBillOnline = async (bill: Omit<Bill, 'id'>) => {
 };
 
 // Supabase에서 사용자별 청구 내역 조회
-export const getBillsByUserOnline = async (userId: string, type: 'from' | 'to') => {
-  let query = supabase.from('bills').select('*');
+export const getBillsByUserOnline = async (userId: string, type: 'from' | 'to'): Promise<Bill[]> => {
+  let query = supabase.from('bills').select('id, fromuserid, touserid, food, price, status, date, targetcode');
   if (type === 'from') {
     query = query.eq('fromuserid', userId);
   } else {
@@ -159,16 +159,19 @@ export const getBillsByUserOnline = async (userId: string, type: 'from' | 'to') 
   }
   const { data, error } = await query;
   if (error) throw new Error(error.message);
-  return data;
-};
+  if (!data) return [];
 
-export const getBillsByUser = (userId: string, type: 'from' | 'to'): Bill[] => {
-  const bills = getBills();
-  if (type === 'from') {
-    return bills.filter(b => b.fromUserId === userId);
-  } else {
-    return bills.filter(b => b.toUserId === userId);
-  }
+  // Transform snake_case to camelCase
+  return data.map(bill => ({
+    id: String(bill.id), // Ensure id is a string
+    fromUserId: bill.fromuserid,
+    toUserId: bill.touserid,
+    food: bill.food,
+    price: bill.price,
+    status: bill.status,
+    date: bill.date,
+    targetCode: bill.targetcode,
+  }));
 };
 
 // Supabase에서 청구 상태 업데이트
