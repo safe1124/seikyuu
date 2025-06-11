@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { User, Bill } from './types'
-import { getBillsByUser, updateBill, getAllUsers } from './userUtils'
+import { getBillsByUserOnline, updateBillOnline, getAllUsers } from './userUtils'
 
 interface ParentPageProps {
   user: User
@@ -18,16 +18,24 @@ export default function ParentPage({ user }: ParentPageProps) {
   })
 
   useEffect(() => {
-    // 자신에게 온 청구 내역 조회
-    const userBills = getBillsByUser(user.id, 'to')
-    setBills(userBills)
+    // 자신에게 온 청구 내역을 Supabase에서 조회
+    const fetchBills = async () => {
+      try {
+        const userBills = await getBillsByUserOnline(user.id, 'to')
+        setBills(userBills || [])
+      } catch {
+        setBills([])
+      }
+    }
+    fetchBills()
   }, [user.id])
 
   const months = Array.from(new Set(bills.map(b => getMonth(b.date)))).sort((a, b) => b.localeCompare(a))
 
-  const handleStatus = (billId: string, status: 'approved' | 'rejected') => {
-    updateBill(billId, { status })
-    setBills(prev => prev.map(bill => bill.id === billId ? { ...bill, status } : bill))
+  const handleStatus = async (billId: string, status: 'approved' | 'rejected') => {
+    await updateBillOnline(billId, { status })
+    const userBills = await getBillsByUserOnline(user.id, 'to')
+    setBills(userBills || [])
   }
 
   const filtered = bills.filter(bill => getMonth(bill.date) === selectedMonth)

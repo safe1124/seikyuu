@@ -160,3 +160,12 @@ export const getBillsByUser = (userId: string, type: 'from' | 'to'): Bill[] => {
     return bills.filter(b => b.toUserId === userId);
   }
 };
+
+// Supabase에서 청구 상태 업데이트
+export const updateBillOnline = async (billId: string, updates: Partial<Bill>) => {
+  const { error } = await supabase
+    .from('bills')
+    .update(updates)
+    .eq('id', billId)
+  return !error
+}
